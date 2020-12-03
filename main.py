@@ -10,7 +10,6 @@ import googlemaps
 import urllib.error
 import urllib.parse
 import urllib.request
-from jinja2 import Environment, FileSystemLoader
 from flask import Flask, render_template, request
 
 app = Flask(__name__)
@@ -35,25 +34,58 @@ def safe_get(url):
 
 # https://developers.google.com/maps/documentation/embed/get-started#forming_the_url
 def gmaps_rest(query, mode="place"):
+    """
+    Takes a location and returns a HTTP address to embed an interactive map from Google Maps
+    """
     base_url = "https://www.google.com/maps/embed/v1"
     key = f"key={_gmaps_key}"
-    q_dict = {"q": query}
+    q_dict = {"q": query, "zoom": "7"}
     # q = query_encode(urllib.parse.urlencode(q_dict))
     q = urllib.parse.urlencode(q_dict).replace("%2C+", ",")
     url = f"{base_url}/{mode}?{key}&{q}"
     return url
 
 
-# @app.route("/")
+# Multiple locations
+# https://medium.com/@limichelle21/integrating-google-maps-api-for-multiple-locations-a4329517977a
+def get_lat_long(location):
+    """
+    Takes a location and returns the latitude and longitude coordinates
+    """
+    geo_info = gmaps.geocode(location)
+    coords = geo_info[0]["geometry"]["location"]
+    print(geo_info)
+    return coords["lat"], coords["lng"]
+
+
+def get_location(coordinates):
+    """
+    Takes a latitude and longitude coordinate and returns a list of addresses at that location
+    """
+    location_info = gmaps.reverse_geocode(latlng=coordinates)
+    location_list = list()
+    for location in location_info:
+        location_list.append(location["formatted_address"])
+    return location_list
+
+
+@app.route("/")
 def display_map():
-    assp
+    url = gmaps_rest("Sapporo")
+    # cities = ["Seattle", "Portland", "Los Angeles", "San Francisco", "Las Vegas", "Salt Lake City"]
+    # coordinates = [get_location(city) for city in cities]
+    # return render_template("template.html", coords_list=coordinates)
+    return render_template("template.html", url=url)
 
 
 def main():
     print("Hello World")
     print(gmaps_rest(query="Eiffel Tower, Paris France"))
+    print(get_lat_long("1600 Amphitheatre Parkway, Mountain View, CA"))
+    print(get_lat_long("Seattle"))
+    # print(len(get_location(get_lat_long("Seattle"))))
 
 
 if __name__ == "__main__":
     main()
-    # app.run(port=3000, debug=True)
+    app.run(port=3000, debug=True)
