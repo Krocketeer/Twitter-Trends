@@ -46,11 +46,7 @@ def gmaps_rest(query, mode="place"):
     url = f"{base_url}/{mode}?{key}&{q}"
     return url
 
-    # "https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap&libraries=&v=weekly"
 
-
-# Multiple locations
-# https://medium.com/@limichelle21/integrating-google-maps-api-for-multiple-locations-a4329517977a
 def get_lat_long(location):
     """
     Takes a location and returns the latitude and longitude coordinates
@@ -72,13 +68,24 @@ def get_location(coordinates):
     return location_list
 
 
+def get_center(coords_list):
+    lat_sum = 0
+    long_sum = 0
+
+    for coords in coords_list:
+        lat_sum += coords[0]
+        long_sum += coords[1]
+
+    return lat_sum/len(coords_list), long_sum/len(coords_list)
+
+
 @app.route("/")
 def display_map():
     url = gmaps_rest("Sapporo")
     cities = ["Seattle", "Portland", "Los Angeles", "San Francisco", "Las Vegas", "Salt Lake City"]
     coordinates = [get_lat_long(city) for city in cities]
-    return render_template("template.html", API_Key=_gmaps_key)
-    # return render_template("template.html", API_Key=_gmaps_key, coords_list=coordinates)
+    # return render_template("template.html", API_Key=_gmaps_key)
+    return render_template("template.html", API_Key=_gmaps_key, coords_list=coordinates, center=get_center(coordinates))
     # return render_template("template.html", url=url)
 
 
