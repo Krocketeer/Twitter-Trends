@@ -1,0 +1,11 @@
+@charset "UTF-8";
+
+* {
+    box-sizing: border-box;
+}
+
+#map {
+  height: 700px;
+  width: 70%;
+  background-color: grey;
+}

@@ -3,38 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="../static/styles.css" type="text/css"/>
 </head>
 <body>
-    <iframe
-        width="100%" height="900px" frameborder="0" style="border:0" src={{url}} allowfullscreen>
-    </iframe>
-
+<!--    <iframe-->
+<!--        width="100%" height="900px" frameborder="0" style="border:0" src={{url}} allowfullscreen>-->
+<!--    </iframe>-->
+    <div id="map"></div>
 <!--    <script type="text/javascript">-->
-<!--        function initMap(coords_list) {-->
-<!--            // Code based on https://stackoverflow.com/questions/3059044/google-maps-js-api-v3-simple-multiple-marker-example-->
-<!--            var map = new google.maps.Map(document.getElementById("map"), {-->
+<!--        var coords_list = "{{coords_list | safe }}"-->
+<!--        function initMap() {-->
+<!--            // var coords_list = "{{coords_list | safe }}"-->
+<!--            var center = {lat: 34.052235, lng: -118.243683};-->
+<!--            var locations = [-->
+<!--                [34.052235, -118.243683],-->
+<!--                [34.024212, -118.496475],-->
+<!--                [33.849182, -118.388405],-->
+<!--                [33.628342, -117.927933],-->
+<!--                [33.770050, -118.193739]-->
+<!--            ];-->
+<!--            var map = new google.maps.Map(document.getElementById('map'), {-->
 <!--                zoom: 7,-->
-<!--                center: new google.maps.LatLng(coords_list.shift()),-->
-<!--                mapTypeId: google.maps.MapTypeId.ROADMAP-->
+<!--                center: center-->
 <!--            });-->
-<!--            if (coords_list.length != 0) {-->
-<!--                for (let i = 0; i < coords_list.length; i++) {-->
-<!--                marker = new google.maps.Marker({-->
-<!--                    position: new google.maps.LatLng(coords_list[i][0], coords_list[i][1]),-->
-<!--                    map: map-->
-<!--                });-->
 
-<!--                google.maps.event.addListener(marker, 'click', (function(marker, i) {-->
-<!--                    return function() {-->
-<!--                        infowindow.setContent(locations[i][0]);-->
+<!--            var infowindow =  new google.maps.InfoWindow({});-->
+<!--            var marker, count;-->
+<!--            for (count = 0; count < coords_list.length; count++) {-->
+<!--                marker = new google.maps.Marker({-->
+<!--                    position: new google.maps.LatLng(coords_list[0], coords_list[1]),-->
+<!--                    map: map-->
+<!--                    // title: locations[count][0]-->
+<!--                });-->
+<!--                google.maps.event.addListener(marker, 'click', (function (marker, count) {-->
+<!--                    return function () {-->
+<!--                        infowindow.setContent("The quick brown fox jumped over the lazy dog");-->
 <!--                        infowindow.open(map, marker);-->
 <!--                    }-->
-<!--                })(marker, i));-->
-<!--                }-->
+<!--                })(marker, count));-->
 <!--            }-->
 <!--        }-->
-<!--        // https://stackoverflow.com/questions/15321431/how-to-pass-a-list-from-python-by-jinja2-to-javascript-->
-<!--        initMap("{{coords_list | safe}}")-->
 <!--    </script>-->
+    <script type="text/javascript">
+        function initMap() {
+            var center = {lat: 34.052235, lng: -118.243683};
+            var locations = [
+                ['Los Angeles', 34.052235, -118.243683],
+                ['Santa Monica', 34.024212, -118.496475],
+                ['Redondo Beach', 33.849182, -118.388405],
+                ['Newport Beach', 33.628342, -117.927933],
+                ['Long Beach', 33.770050, -118.193739]
+            ];
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 7,
+                center: center
+            });
+
+            var infowindow =  new google.maps.InfoWindow({});
+            var marker, count;
+            for (count = 0; count < locations.length; count++) {
+                marker = new google.maps.Marker({
+                    position: new google.maps.LatLng(locations[count][1], locations[count][2]),
+                    map: map,
+                    title: locations[count][0]
+                });
+                google.maps.event.addListener(marker, 'click', (function (marker, count) {
+                    return function () {
+                        infowindow.setContent(locations[count][0]);
+                        infowindow.open(map, marker);
+                    }
+                })(marker, count));
+            }
+        }
+    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key={{API_Key}}&callback=initMap"></script>
 </body>
 </html>

@@ -37,6 +37,7 @@ def gmaps_rest(query, mode="place"):
     """
     Takes a location and returns a HTTP address to embed an interactive map from Google Maps
     """
+    # https://www.google.com/maps/embed/v1/MODE?key=YOUR_API_KEY&parameters
     base_url = "https://www.google.com/maps/embed/v1"
     key = f"key={_gmaps_key}"
     q_dict = {"q": query, "zoom": "7"}
@@ -44,6 +45,8 @@ def gmaps_rest(query, mode="place"):
     q = urllib.parse.urlencode(q_dict).replace("%2C+", ",")
     url = f"{base_url}/{mode}?{key}&{q}"
     return url
+
+    # "https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap&libraries=&v=weekly"
 
 
 # Multiple locations
@@ -72,17 +75,18 @@ def get_location(coordinates):
 @app.route("/")
 def display_map():
     url = gmaps_rest("Sapporo")
-    # cities = ["Seattle", "Portland", "Los Angeles", "San Francisco", "Las Vegas", "Salt Lake City"]
-    # coordinates = [get_location(city) for city in cities]
-    # return render_template("template.html", coords_list=coordinates)
-    return render_template("template.html", url=url)
+    cities = ["Seattle", "Portland", "Los Angeles", "San Francisco", "Las Vegas", "Salt Lake City"]
+    coordinates = [get_lat_long(city) for city in cities]
+    return render_template("template.html", API_Key=_gmaps_key)
+    # return render_template("template.html", API_Key=_gmaps_key, coords_list=coordinates)
+    # return render_template("template.html", url=url)
 
 
 def main():
     print("Hello World")
-    print(gmaps_rest(query="Eiffel Tower, Paris France"))
-    print(get_lat_long("1600 Amphitheatre Parkway, Mountain View, CA"))
-    print(get_lat_long("Seattle"))
+    # print(gmaps_rest(query="Eiffel Tower, Paris France"))
+    # print(get_lat_long("1600 Amphitheatre Parkway, Mountain View, CA"))
+    # print(get_lat_long("Seattle"))
     # print(len(get_location(get_lat_long("Seattle"))))
 
 
