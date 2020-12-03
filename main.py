@@ -17,6 +17,8 @@ app = Flask(__name__)
 with open("API_Keys.json") as json_file:
     file = json.load(json_file)
     _gmaps_key = file["Google Maps API"]
+    _twitter_key = file["Twitter API key"]
+    _twitter_beartoken = file["Twitter bear_token"]
     gmaps = googlemaps.Client(key=_gmaps_key)
 
 
@@ -77,6 +79,7 @@ def get_center(coords_list):
         long_sum += coords[1]
 
     return lat_sum/len(coords_list), long_sum/len(coords_list)
+
 
 
 @app.route("/")
