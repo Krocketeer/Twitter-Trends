@@ -11,6 +11,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from flask import Flask, render_template, request
+import math
 
 app = Flask(__name__)
 
@@ -53,7 +54,6 @@ def get_lat_long(location):
     """
     geo_info = gmaps.geocode(location)
     coords = geo_info[0]["geometry"]["location"]
-    print(geo_info)
     return coords["lat"], coords["lng"]
 
 
@@ -64,37 +64,68 @@ def get_location(coordinates):
     location_info = gmaps.reverse_geocode(latlng=coordinates)
     location_list = list()
     for location in location_info:
-        location_list.append(location["formatted_address"])
-    return location_list
+        if "locality" in location["types"]:
+            return location["formatted_address"]
+        # location_list.append(location["formatted_address"])
+    # return location_list
 
 
+# Implement a way to determine if there's more cities on one side than the other
 def get_center(coords_list):
-    lat_sum = 0
-    long_sum = 0
+    # lat_sum = 0
+    # long_sum = 0
+    #
+    # for coords in coords_list:
+    #     lat_sum += coords[0]
+    #     long_sum += coords[1]
+    #
+    # return lat_sum / len(coords_list), long_sum / len(coords_list)
+    # "https://stackoverflow.com/questions/6671183/calculate-the-center-point-of-multiple-latitude-longitude-coordinate-pairs"
+    x = 0.0
+    y = 0.0
+    z = 0.0
 
-    for coords in coords_list:
-        lat_sum += coords[0]
-        long_sum += coords[1]
+    for coord in coords_list:
+        lat = math.radians(coord[0])
+        long = math.radians(coord[1])
 
-    return lat_sum/len(coords_list), long_sum/len(coords_list)
+        x += math.cos(lat) * math.cos(long)
+        y += math.cos(lat) * math.sin(long)
+        z += math.sin(lat)
+
+    x = x / len(coords_list)
+    y = y / len(coords_list)
+    z = z / len(coords_list)
+
+    center_long = math.atan2(y, x)
+    center_hyp = math.sqrt(x * x + y * y)
+    center_lat = math.atan2(z, center_hyp)
+
+    return math.degrees(center_lat), math.degrees(center_long)
 
 
 @app.route("/")
 def display_map():
     url = gmaps_rest("Sapporo")
-    cities = ["Seattle", "Portland", "Los Angeles", "San Francisco", "Las Vegas", "Salt Lake City"]
+    cities = ["Seattle", "Portland", "Los Angeles", "San Francisco", "Las Vegas", "Salt Lake City", "New York City"]
+    # cities = ["Seattle", "Los Angeles", "New York City"]
     coordinates = [get_lat_long(city) for city in cities]
+    coordinates.append(get_center(coordinates))
+    print(get_center(coordinates))
+    return render_template("template.html", API_Key=_gmaps_key,
+                           coords_list=coordinates, center=(39.8283, -98.5759))
     # return render_template("template.html", API_Key=_gmaps_key)
-    return render_template("template.html", API_Key=_gmaps_key, coords_list=coordinates, center=get_center(coordinates))
     # return render_template("template.html", url=url)
 
 
 def main():
     print("Hello World")
-    # print(gmaps_rest(query="Eiffel Tower, Paris France"))
-    # print(get_lat_long("1600 Amphitheatre Parkway, Mountain View, CA"))
-    # print(get_lat_long("Seattle"))
-    # print(len(get_location(get_lat_long("Seattle"))))
+    # cities = ["Seattle", "Portland", "Los Angeles", "San Francisco", "Las Vegas", "Salt Lake City",
+    #           "New York City"]
+    cities = ["Seattle", "Los Angeles", "New York City"]
+    coordinates = [get_lat_long(city) for city in cities]
+    print(f"Coordinates List: {coordinates}")
+    print(get_center(coordinates))
 
 
 if __name__ == "__main__":
