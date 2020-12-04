@@ -6,6 +6,7 @@
 """
 
 import json
+import tweepy
 import googlemaps
 import urllib.error
 import urllib.parse
@@ -18,8 +19,13 @@ with open("API_Keys.json") as json_file:
     file = json.load(json_file)
     _gmaps_key = file["Google Maps API"]
     _twitter_key = file["Twitter API key"]
+    _twitter_secret = file["Twitter secret"]
     _twitter_beartoken = file["Twitter bear_token"]
     gmaps = googlemaps.Client(key=_gmaps_key)
+
+    # Authenciating with tweepy Get Trends at Location
+    auth = tweepy.OAuthHandler(_twitter_key, _twitter_secret)
+    api = tweepy.API(auth)
 
 
 def safe_get(url):
@@ -78,8 +84,25 @@ def get_center(coords_list):
         lat_sum += coords[0]
         long_sum += coords[1]
 
-    return lat_sum/len(coords_list), long_sum/len(coords_list)
+    return lat_sum/len(coords_list), long_sum/len(coords_list) 
 
+def get_location_trends(lat, long):
+    """
+    Takes a latitude and longitude coordinate and returns a list of trends near that location
+    """
+    available_loc = get_trends()
+    closest_loc = api.trends_closest(lat, long)
+    trends = api.trends_place(closest_loc[0]['woeid'])
+
+    # for trend in trends[0]['trends']:
+    #     print(trend['name'])
+    return trends
+
+def get_trends():
+    """
+    Returns all available trends
+    """
+    return api.trends_available()
 
 
 @app.route("/")
