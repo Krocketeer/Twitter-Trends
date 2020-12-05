@@ -111,6 +111,7 @@ def get_center(coords_list):
 
     return math.degrees(center_lat), math.degrees(center_long)
 
+
 def get_location_trends(lat, long):
     """
     Takes a latitude and longitude coordinate and returns a list of trends near that location
@@ -125,6 +126,7 @@ def get_location_trends(lat, long):
             trend_names_vol[trend['name']] = trend['tweet_volume']
 
     return trend_names_vol
+
 
 def get_trends():
     """
