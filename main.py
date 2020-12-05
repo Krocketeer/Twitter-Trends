@@ -116,7 +116,6 @@ def get_location_trends(lat, long):
     """
     Takes a latitude and longitude coordinate and returns a list of trends near that location
     """
-    available_loc = api.trends_available()
     closest_loc = api.trends_closest(lat, long)
     trends = api.trends_place(closest_loc[0]['woeid'])
 
@@ -128,11 +127,11 @@ def get_location_trends(lat, long):
     return trend_names_vol
 
 
-def get_trends():
+def get_trends(count = 5):
     """
     Returns all available trends
     """
-    return api.trends_available()
+    available_loc = api.trends_available()
 
 
 @app.route("/")
@@ -151,7 +150,7 @@ def display_map():
 
 def main():
     print("Hello World")
-    print(get_location_trends(*get_lat_long("Seattle")))
+    print(get_location_trends(*get_lat_long("United States")))
     # cities = ["Seattle", "Portland", "Los Angeles", "San Francisco", "Las Vegas", "Salt Lake City",
     #           "New York City"]
     cities = ["Seattle", "Los Angeles", "New York City"]
