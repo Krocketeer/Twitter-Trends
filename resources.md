@@ -7,3 +7,5 @@ The StackOverFlow that the Medium referenced: https://stackoverflow.com/question
 Gmaps Documentation for Simple Markers (JavaScript): https://developers.google.com/maps/documentation/javascript/examples/marker-simple#maps_marker_simple-javascript
 
 Gmaps Documentation for URL Formatting: https://developers.google.com/maps/documentation/embed/get-started#forming_the_url
+
+Git Collab Guide: https://medium.com/@jonathanmines/the-ultimate-github-collaboration-guide-df816e98fb67
